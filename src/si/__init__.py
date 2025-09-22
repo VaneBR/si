@@ -1,4 +1,4 @@
-__author__ = "João Capela"
+__author__ = "Vanessa Rodriguez"
 __credits__ = ["João Capela", "João Correia, Fernando Cruz", "Vítor Pereira"]
 __license__ = "Apache License 2.0"
 __version__ = "0.0.1"
