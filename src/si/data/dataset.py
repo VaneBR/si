@@ -126,6 +126,72 @@ class Dataset:
         }
         return pd.DataFrame.from_dict(data, orient="index", columns=self.features)
 
+    def dropna(self):
+        """
+        Drops all samples that have at least one NaN value
+        
+        Returns: 
+        -------self: The dataset without NaN values
+        """
+        mask = ~np.isnan(self.X).any(axis=1) #identify rows without NaN
+
+        self.X=self.X[mask] #keep only rows without NaN
+
+        if self.y is not None:
+            self.y=self.y[mask] #keep only rows without NaN in y
+        return self
+    
+    def fillna(self, value: Union[float, str]):
+        """
+        Fills all NaN values with another value, mean or median
+
+        Args: 
+            value: float or "mean" or "median"
+
+        Returns:
+            self: The dataset without NaN values
+        """
+        if isinstance(value, (int,float)): 
+            self.X = np.where(np.isnan(self.X), value, self.X)
+        
+        elif value == "mean":
+            col_means = np.nanmean(self.X, axis=0) #substitute NaN with mean of each column
+            nan_mask=np.isnan(self.X) #find NaN positions
+
+            for col in range(self.X.shape[1]):
+                self.X[nan_mask[:, col], col] = col_means[col] #substitute NaN with mean of each column
+        
+        elif value == "median":
+            col_medians = np.nanmedian(self.X, axis=0) #substitute NaN with median of each column
+            nan_mask=np.isnan(self.X) #find NaN positions
+
+            for col in range(self.X.shape[1]):
+                self.X[nan_mask[:, col], col] = col_medians[col] #substitute NaN with median of each column
+       
+        else:   
+            raise ValueError("Value must be a float, 'mean' or 'median'")
+        
+        return self       
+    def remove_by_index(self, index:int):
+        """
+        Remove a sample by its index
+        
+        Args:
+            index: The index of the sample to remove
+            
+        Returns:
+            self: The dataset without the removed sample
+        """
+        if index < 0 or index >= self.X.shape[0]:
+            raise ValueError(f"Index {index} out of bounds (0--{self.X.shape[0]-1})") #verifies if index is valid
+        
+        self.X= np.delete(self.X, index, axis=0) #removes the sample at the given index
+        
+        if self.y is not None:
+            self.y = np.delete(self.y, index, axis=0) #removes the label at the given index
+        
+        return self
+    
     @classmethod
     def from_dataframe(cls, df: pd.DataFrame, label: str = None):
         """
@@ -214,3 +280,6 @@ if __name__ == '__main__':
     print(dataset.get_min())
     print(dataset.get_max())
     print(dataset.summary())
+    print(dataset.dropna())
+    print(dataset.fillna("mean"))
+    print(dataset.remove_by_index(0))
