@@ -169,22 +169,21 @@ class RidgeRegressionLeastSquares(Model):
         
         return y_pred
     
-    def _score(self, dataset: Dataset) -> float:
-        """
-        Computes MSE between true and predicted values.
-        
-        Parameters
-        ----------
-        dataset : Dataset
-            Test dataset
-        
-        Returns
-        -------
-        float
-            MSE (Mean Squared Error)
-        """
-        # 1. Get predictions
-        y_pred = self._predict(dataset)
-        
-        # 2. Compute MSE
-        return mse(dataset.y, y_pred)
+    def _score(self, dataset: Dataset, predictions: np.ndarray) -> float:
+    """
+    Computes MSE between true and predicted values.
+    
+    Parameters
+    ----------
+    dataset : Dataset
+        Test dataset
+    predictions : np.ndarray
+        Predicted values
+    
+    Returns
+    -------
+    float
+        MSE (Mean Squared Error)
+    """
+    # Compute MSE using provided predictions
+    return mse(dataset.y, predictions)
