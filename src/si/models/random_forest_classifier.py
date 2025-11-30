@@ -139,7 +139,7 @@ class RandomForestClassifier(Model):
             bootstrap_dataset = Dataset(
                 X=X_bootstrap,
                 y=y_bootstrap,
-                features=[dataset.features[i] for i in feature_indices] if dataset.features else None,
+                features=[dataset.features[i] for i in feature_indices] if dataset.features is not None else None,
                 label=dataset.label
             )
             
@@ -194,7 +194,7 @@ class RandomForestClassifier(Model):
             temp_dataset = Dataset(
                 X=X_subset,
                 y=dataset.y,
-                features=[dataset.features[i] for i in feature_indices] if dataset.features else None,
+                features=[dataset.features[i] for i in feature_indices] if dataset.features is not None else None,
                 label=dataset.label
             )
             
@@ -215,7 +215,7 @@ class RandomForestClassifier(Model):
         
         return final_predictions
     
-    def _score(self, dataset: Dataset) -> float:
+    def _score(self, dataset: Dataset, predictions: np.ndarray) -> float:
         """
         Computes accuracy between true and predicted values.
         
@@ -223,11 +223,12 @@ class RandomForestClassifier(Model):
         ----------
         dataset : Dataset
             Test dataset
+        predictions : np.ndarray
+            Predicted values
         
         Returns
         -------
         float
             Accuracy score
         """
-        predictions = self._predict(dataset)
         return accuracy(dataset.y, predictions)
