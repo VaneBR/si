@@ -110,3 +110,21 @@ class KNNRegressor(Model):
             predictions[i] = predicted_value
         
         return predictions
+    
+    def _score(self, dataset: Dataset, predictions: np.ndarray) -> float:
+        """
+        Computes the RMSE score for the predictions.
+        
+        Parameters
+        ----------
+        dataset : Dataset
+            Dataset with true labels
+        predictions : np.ndarray
+            Predicted values
+        
+        Returns
+        -------
+        float
+            RMSE score (lower is better)
+        """
+        return rmse(dataset.y, predictions)
