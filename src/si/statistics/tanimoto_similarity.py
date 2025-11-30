@@ -22,6 +22,13 @@ def tanimoto_similarity(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     np.ndarray
         Array containing the Tanimoto distances between x and each sample in y
     """
+    # Ensure that x is 1D and y is 2D
+    if x.ndim != 1:
+        raise ValueError("x must be a 1D array")
+    if y.ndim != 2:
+        raise ValueError("y must be a 2D array")
+    if x.shape[0] != y.shape[1]:
+        raise ValueError("x and y must have the same number of features")
     
     # Convert to boolean arrays to ensure binary values
     x = x.astype(bool)
