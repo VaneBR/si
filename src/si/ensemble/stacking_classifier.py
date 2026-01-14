@@ -90,7 +90,7 @@ class StackingClassifier(Model):
                 predictions_numeric=np.array([label_map[pred] for pred in predictions])
                 X_meta[:,i]=predictions_numeric
             else:
-                X_meta[:,i]=predictions
+                X_meta[:,i]=predictions.flatten()
         return X_meta
     
     def _predict(self,dataset:Dataset)->np.ndarray:
@@ -115,9 +115,9 @@ class StackingClassifier(Model):
         #3. Criar dataset meta e fazer predição final
         meta_dataset=Dataset(
             X=X_meta,
-            y=None
+            y=None,
             features=[f"model_{i+1}_pred" for i in range(len(self.models))],
-            label=dataset.label if dataset.label else "prediction"
+            label=dataset.label if dataset.label else "predictions"
         )
 
         final_predictions = self.final_model.predict(meta_dataset)
