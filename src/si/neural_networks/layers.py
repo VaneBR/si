@@ -141,3 +141,105 @@ class DenseLayer(Layer):
             The shape of the output of the layer.
         """
         return (self.n_units,) 
+
+class Dropout(Layer):
+    """
+    Dropout layer - Técnica de regularização
+    
+    Durante o treino, desativa aleatoriamente uma fração de neurônios
+    (definida por probability), ajudando a prevenir overfitting
+
+    Durante a inferencia, todos os neuronios são mantidos ativos
+
+    A saída é escalada durante o treino para manter a mesma magnitude
+    esperada durante a inferencia (inverted dropout)
+    """
+
+    def __init__(self, probability:float):
+        """
+        Inicializa a camada de Dropout
+        """
+        super().__init__()
+        
+        if not 0 <= probability < 1:
+            raise ValueError("probability deve estar entre 0 e 1, recebeu {probability}")
+        
+        self.probability = probability
+
+        #Parametros estimados
+        self.mask = None
+        self.input = None
+        self.output = None
+    
+    def forward_propagation(self, input_data, training=True):
+        """
+        Forward propagation com dropout
+        
+        Modo Treino: 
+        1. Calcular fator de escala: 1/(1 - probability)
+        2. Gerar máscara binomial com probabilidade (1-probability)
+        3. Aplicar máscara e escalar: output = input * mas * scaling_factor
+        
+        Modo Inferencia:
+        - Retornar input sem modificações
+        """
+
+        self.input = input_data
+
+        if training:
+            #Modo Treino: aplicar dropout
+            #1. Calcular fator de escala (inverted dropout)
+            #Isso mantem a magnitude esperada durante a inferencia
+            scaling_factor = 1.0 / (1.0 - self.probability)
+
+            #2. Gerar máscara binomial
+            #Probabilidade de manter o neuronio = (1-probability)
+            #Se probability=0.5, então 50% serão mantidos (1) e 50 % zerados (0)
+            #Se probability=0.2, então 80% serão mantidos (1) e 20 % zerados (0)
+            self.mask = (np.random.binomial(
+                n=1,                            #Bernoulli trial (0 ou 1)
+                p=(1.0 - self.probability),     #Prob de manter (não dropar)
+                size=input_data.shape           #Mesma forma que input
+            )
+
+            #3. Aplicar máscara e escalar
+            self.output = input_data * self.mask * scaling_factor
+
+        else:
+        # Modo Inferencia: não aplicar dropout
+        #Todos os neuronios estão ativos
+            self.output = input_data
+            self.mask=None #Não precisamos de mascara na inferencia
+        
+        return self.output
+    
+    def backward_propagation(self, output_error):
+    """
+    Backward propagation com dropout
+
+    Simplesmente multiplica o erro pela mascara usada no forward
+    Isto garante que o gradiente seja zero para neuronios que foram
+    desativados (dropados)
+    """
+
+        if self.mask is None:
+            #Multiplicar erro pela mascara
+            #Neuronios que foram zerados no forward também tem gradiente zer
+            return output_error * self.mask
+        else:
+            #Se não há mascara (inferencia), passar erro diretamente
+            return output_error
+        
+    def output_shape(self):
+        """
+        Retorna a forma da saída 
+        Dropout não altera a forma dos dados
+        """
+        return self.input_shape()
+    
+    def parameters(self):
+        """
+        Retorna o número de parâmetros treinaveis
+        Dropout não tem parâmetros treináveis
+        """
+        return 0    
