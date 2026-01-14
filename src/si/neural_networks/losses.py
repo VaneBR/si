@@ -131,3 +131,33 @@ class BinaryCrossEntropy(LossFunction):
         # Avoid division by zero
         p = np.clip(y_pred, 1e-15, 1 - 1e-15)
         return - (y_true / p) + (1 - y_true) / (1 - p)
+
+class CategoricalCrossEntropy(LossFunction):
+    """
+    Categorical Cross Entropy loss function for multi-class classification
+    Measures dissmilarity between predicted class probabilities and 
+    true one-hot encoded labels
+    Formula: CCE = -1/n * sum(sum(y_true_ij * log(y_pred_ij)))
+    """
+
+    def loss(self, y_true, y_pred):
+        """
+        Compute the categorical cross entropy loss function.
+
+        """
+        # Clip predictions to avoid log(0)
+        y_pred=np.clip(y_pred, 1e-15, 1 - 1e-15)
+
+        #Compute catergorical cross entropy
+        return -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
+
+    def derivative(self, y_true, y_pred):
+        """
+        Compute the derivative of the categorical cross entropy loss function.
+        When combined with softmax, simplifies to: y_pred - y_true
+        """
+        #Clip predictions to avoid division by zero
+        y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
+
+        #Compute derivative
+        return -y_true/y_pred/y_true.shape[0]
