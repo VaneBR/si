@@ -20,9 +20,9 @@ class StackingClassifier(Model):
     
     """
 
-    def __init__(self, models: List[Model], final_model: Model):
+    def __init__(self, models: List[Model], final_model: Model, **kwargs):
         """Inicializa o StackingClassifier."""
-        super().__init__()
+        super().__init__(**kwargs)
         self.models = models
         self.final_model = final_model
 
@@ -115,19 +115,18 @@ class StackingClassifier(Model):
         #3. Criar dataset meta e fazer predição final
         meta_dataset=Dataset(
             X=X_meta,
-            y=dataset.y,
+            y=None
             features=[f"model_{i+1}_pred" for i in range(len(self.models))],
-            label=dataset.label
+            label=dataset.label if dataset.label else "prediction"
         )
 
         final_predictions = self.final_model.predict(meta_dataset)
 
         return final_predictions
     
-    def _score(self, dataset: Dataset) -> float:
+    def _score(self, dataset: Dataset,predictions: np.ndarray = None) -> float:
         """Calcula a accuracy das predições"""
         
-        predictions = self.predict(dataset)
         return accuracy(dataset.y, predictions)
     
     def get_base_scores(self, dataset:Dataset) -> dict: 
