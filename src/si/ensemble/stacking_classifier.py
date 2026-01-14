@@ -40,8 +40,6 @@ class StackingClassifier(Model):
             raise ValueError("Dataset precisa de ter labels (y) para treino.")
     
         # Etapa 1: Treina os modelos base
-        print(f"Treinando modelo {i+1}/{len(self.models)}: {model.__class__.__name__}")
-
         for i, model in enumerate(self.models):
             print(f"Treinando modelo {i+1}/{len(self.models)}: {model.__class__.__name__}")
             model.fit(dataset)
@@ -84,7 +82,7 @@ class StackingClassifier(Model):
 
         for i, predictions in enumerate(predictions_list):
             #Se as predições são categoricas, fazer label encoding
-            if predictions.dtype==object or not np.issubdtype(predictions.dtype, np.numer):
+            if predictions.dtype==object or not np.issubdtype(predictions.dtype, np.number):
                 unique_labels=np.unique(predictions)
                 label_map={label:idx for idx, label in enumerate(unique_labels)}
                 predictions_numeric=np.array([label_map[pred] for pred in predictions])
