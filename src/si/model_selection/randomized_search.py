@@ -137,8 +137,8 @@ def randomized_search_cv(model:Model,
 
     for ranks, idx in enumerate(sorted_indices, 1):
         score = all_scores[idx]
-        hyperparams = all_hyperparameters[idx]
-        marker="Best if idx==best_index else ""
+        params = all_hyperparameters[idx]
+        marker="Best if idx==best_index else "
         print(f"{ranks:<5} {score:<12.4f} {params} {marker}")    
 
     print("\n" + "="*80)

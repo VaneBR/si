@@ -196,7 +196,7 @@ class Dropout(Layer):
             #Probabilidade de manter o neuronio = (1-probability)
             #Se probability=0.5, então 50% serão mantidos (1) e 50 % zerados (0)
             #Se probability=0.2, então 80% serão mantidos (1) e 20 % zerados (0)
-            self.mask = (np.random.binomial(
+            self.mask = np.random.binomial(
                 n=1,                            #Bernoulli trial (0 ou 1)
                 p=(1.0 - self.probability),     #Prob de manter (não dropar)
                 size=input_data.shape           #Mesma forma que input
@@ -214,13 +214,13 @@ class Dropout(Layer):
         return self.output
     
     def backward_propagation(self, output_error):
-    """
-    Backward propagation com dropout
+        """
+        Backward propagation com dropout
 
-    Simplesmente multiplica o erro pela mascara usada no forward
-    Isto garante que o gradiente seja zero para neuronios que foram
-    desativados (dropados)
-    """
+        Simplesmente multiplica o erro pela mascara usada no forward
+        Isto garante que o gradiente seja zero para neuronios que foram
+        desativados (dropados)
+        """
 
         if self.mask is None:
             #Multiplicar erro pela mascara
