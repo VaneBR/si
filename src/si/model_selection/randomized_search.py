@@ -36,7 +36,7 @@ def randomized_search_cv(model:Model,
                              f"o hiperparâmetro '  {param_name}'")
         
     print(f"\nModelo: {model.__class__.__name__}")
-    print(f"Dataset: {dataset.X.shape()}")
+    print(f"Dataset: {dataset.X.shape}")
     print(f"CV Folds: {cv}")
     print(f"Iterações (combinações aleatorias): {n_iter}")
     print(f"Random seed: {seed}")
@@ -102,7 +102,7 @@ def randomized_search_cv(model:Model,
 
             #Armazenar resultados
             all_hyperparameters.append(current_params.copy())
-            all_scores.append(-np.inf)
+            all_scores.append(mean_score)
             iteration += 1
 
         except Exception as e:
@@ -138,7 +138,7 @@ def randomized_search_cv(model:Model,
     for ranks, idx in enumerate(sorted_indices, 1):
         score = all_scores[idx]
         params = all_hyperparameters[idx]
-        marker="Best if idx==best_index else "
+        marker="Best" if idx==best_index else ""
         print(f"{ranks:<5} {score:<12.4f} {params} {marker}")    
 
     print("\n" + "="*80)
