@@ -93,7 +93,7 @@ class StackingClassifier(Model):
                 X_meta[:,i]=predictions
         return X_meta
     
-    def predict(self, dataset: Dataset) -> np.ndarray:
+    def _predict(self,dataset:Dataset)->np.ndarray:
         """Faz predições usando o ensemble
         1. Obter predições dos modelos base 
         2. Usar essas predições como features para o modelo final
