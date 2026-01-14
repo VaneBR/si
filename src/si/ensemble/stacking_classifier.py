@@ -113,9 +113,9 @@ class StackingClassifier(Model):
         X_meta=self._predictions_to_features(base_predictions)
 
         #3. Criar dataset meta e fazer predição final
-        meta_dataset = Dataset (
+        meta_dataset=Dataset(
             X=X_meta,
-            y=dataset.y
+            y=dataset.y,
             features=[f"model_{i+1}_pred" for i in range(len(self.models))],
             label=dataset.label
         )
